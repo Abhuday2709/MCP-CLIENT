@@ -1,0 +1,77 @@
+.app-item {
+    padding: 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.app-item:hover {
+    border-color: #667eea;
+    background: #f8f9fa;
+    transform: translateX(4px);
+}
+
+.app-info {
+    flex: 1;
+}
+
+.app-info h3 {
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #222831;
+}
+
+.app-info p {
+    font-size: 13px;
+    color: #6c757d;
+    margin: 0;
+}
+
+.connect-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    margin-left: 12px;
+}
+
+.connect-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.connect-btn:active {
+    transform: translateY(0);
+}
+
+.connect-btn.connected {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.connect-btn.connected:hover {
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .app-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .connect-btn {
+        width: 100%;
+        margin-left: 0;
+    }
+}
