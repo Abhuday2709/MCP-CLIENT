@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { generateBotResponse } from '../utils/botResponses'
+import { sendMessageToAI } from '../services/api'
 
 export const useChatbot = () => {
   const [messages, setMessages] = useState([
@@ -12,8 +12,9 @@ export const useChatbot = () => {
   const [inputValue, setInputValue] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [connectedApps, setConnectedApps] = useState(new Set())
+  const [error, setError] = useState(null)
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputValue.trim() === '' || isTyping) return
 
     const userMessage = {
@@ -22,21 +23,43 @@ export const useChatbot = () => {
       content: inputValue
     }
 
-    const messageToRespond = inputValue
+    const messageToSend = inputValue
     setMessages(prev => [...prev, userMessage])
     setInputValue('')
     setIsTyping(true)
+    setError(null)
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Get conversation history for context (last few messages)
+      const conversationHistory = messages.slice(-10).map(msg => ({
+        type: msg.type,
+        content: msg.content
+      }))
+
+      // Call Gemini API
+      const aiResponse = await sendMessageToAI(messageToSend, conversationHistory)
+
       const botMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: generateBotResponse(messageToRespond, connectedApps.size)
+        content: aiResponse
       }
+      
       setMessages(prev => [...prev, botMessage])
       setIsTyping(false)
-    }, 1000 + Math.random() * 1000)
+    } catch (error) {
+      console.error('Failed to get AI response:', error)
+      
+      const errorMessage = {
+        id: Date.now() + 1,
+        type: 'bot',
+        content: "I apologize, but I'm having trouble connecting to the AI service. Please make sure the server is running on port 3000 and try again."
+      }
+      
+      setMessages(prev => [...prev, errorMessage])
+      setError(error.message)
+      setIsTyping(false)
+    }
   }
 
   const toggleAppConnection = (appId) => {
@@ -57,6 +80,7 @@ export const useChatbot = () => {
     setInputValue,
     isTyping,
     connectedApps,
+    error,
     handleSendMessage,
     toggleAppConnection
   }

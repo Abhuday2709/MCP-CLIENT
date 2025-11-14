@@ -54,6 +54,7 @@
     word-wrap: break-word;
     word-break: break-word;
     line-height: 1.5;
+    color: #222831;
 }
 
 .message.user .message-content {
