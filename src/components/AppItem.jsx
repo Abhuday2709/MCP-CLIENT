@@ -8,6 +8,8 @@ function AppItem({ app, isConnected, onToggle }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
   useEffect(() => {
     checkAuthStatus();
     
@@ -34,7 +36,7 @@ function AppItem({ app, isConnected, onToggle }) {
   const checkAuthStatus = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${process.env.API_URL}/auth/status`, {
+      const response = await fetch(`${API_URL}/auth/status`,{
         credentials: 'include'
       });
       const data = await response.json();
@@ -47,20 +49,21 @@ function AppItem({ app, isConnected, onToggle }) {
     }
   };
 
-   const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async () => {
     try {
-      const response = await fetch(`${API_URL}/auth/google`, {
-        credentials: 'include'
-      });
+      setLoading(true);
+      const response = await fetch(`${API_URL}/auth/google`);
       const data = await response.json();
       window.location.href = data.authUrl;
     } catch (err) {
       setError('Failed to initiate Google login');
+      setLoading(false);
     }
   };
 
-   const handleLogout = async (provider) => {
+  const handleLogout = async (provider) => {
     try { 
+      setLoading(true);
       await fetch(`${API_URL}/auth/logout/${provider}`, {
         method: 'POST',
         credentials: 'include'
@@ -68,23 +71,43 @@ function AppItem({ app, isConnected, onToggle }) {
       checkAuthStatus();
     } catch (err) {
       setError(`Failed to logout from ${provider}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = () => {
-    onToggle(app.id)
-  }
+    if (app.id === 'gmail' && !authStatus.google.authenticated) {
+      handleGoogleLogin();
+    } else if (app.id === 'gmail' && authStatus.google.authenticated) {
+      handleLogout('google');
+    } else {
+      onToggle(app.id);
+    }
+  };
+
+  const isGmailConnected = app.id === 'gmail' && authStatus.google.authenticated;
+
   return (
     <div className="app-item">
       <div className="app-info">
         <h3>{app.icon} {app.name}</h3>
         <p>{app.description}</p>
+        {authStatus.google.authenticated && app.id === 'gmail' && (
+          <p className="user-info">
+            Logged in as: {authStatus.google.user?.email}
+          </p>
+        )}
+        {error && <p className="error-message">{error}</p>}
       </div>
       <button 
-        className={`connect-btn ${isConnected ? 'connected' : ''}`}
+        className={`connect-btn ${isGmailConnected || isConnected ? 'connected' : ''}`}
         onClick={handleSubmit}
+        disabled={loading}
       >
-        {isConnected ? '✓ Connected' : 'Connect'}
+        {loading ? 'Loading...' : 
+         isGmailConnected ? '✓ Connected (Logout)' : 
+         isConnected ? '✓ Connected' : 'Connect'}
       </button>
     </div>
   )
