@@ -7,6 +7,7 @@ export const sendMessageToAI = async (message, conversationHistory = []) => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({
         message,
         conversationHistory: conversationHistory.slice(-10) // Send last 10 messages for context
