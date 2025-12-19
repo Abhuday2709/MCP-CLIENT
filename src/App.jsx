@@ -3,7 +3,6 @@ import Header from './components/Header'
 import ChatMessages from './components/ChatMessages'
 import InputArea from './components/InputArea'
 import AppsModal from './components/AppsModal'
-import DebugPanel from './components/DebugPanel'
 import { useChatbot } from './hooks/useChatbot'
 import { apps } from './data/appsData'
 import './App.css'
@@ -41,8 +40,6 @@ function App() {
         connectedApps={connectedApps}
         onToggleApp={toggleAppConnection}
       />
-      
-      <DebugPanel />
     </>
   )
 }

@@ -20,10 +20,10 @@ function DebugPanel() {
 
   const testMicrosoftEndpoint = async () => {
     try {
-      console.log('Testing Microsoft endpoint...');
+      //console.log('Testing Microsoft endpoint...');
       const response = await fetch(`${API_URL}/auth/microsoft`);
       const data = await response.json();
-      console.log('Microsoft endpoint response:', data);
+      //console.log('Microsoft endpoint response:', data);
       alert(`Response: ${JSON.stringify(data, null, 2)}`);
     } catch (err) {
       console.error('Error:', err);
